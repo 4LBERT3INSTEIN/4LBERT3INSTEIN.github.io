@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Journey in Physics - Eduardo Cuevas</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@400;500;700&display=swap" rel="stylesheet">
+    
+    <style>
+        /* --- ESTILOS BASE --- */
+        body, html { margin: 0; padding: 0; background-color: #030014; color: #e2e8f0; font-family: 'Rajdhani', sans-serif; overflow: hidden; }
+        .presentation-container { height: 100vh; overflow-y: scroll; scroll-snap-type: y mandatory; scroll-behavior: smooth; }
+
+        /* --- FONDO ANIMADO --- */
+        .background-grid {
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            background-image: linear-gradient(rgba(0, 243, 255, 0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(0, 243, 255, 0.1) 1px, transparent 1px);
+            background-size: 40px 40px; z-index: -2; animation: moveGrid 20s linear infinite; opacity: 0.5;
+        }
+        .glow-orb {
+            position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 70vw; height: 70vw;
+            background: radial-gradient(circle, rgba(66, 0, 255, 0.15) 0%, rgba(0, 0, 0, 0) 70%); z-index: -1; pointer-events: none;
+        }
+
+        /* --- ESTRUCTURA DE DIAPOSITIVA --- */
+        .slide {
+            height: 100vh; width: 100%; scroll-snap-align: start; display: flex; justify-content: center; align-items: center;
+            position: relative; padding: 2rem; box-sizing: border-box;
+        }
+        .content-box {
+            background: rgba(13, 18, 36, 0.7); border: 1px solid rgba(0, 243, 255, 0.4); border-radius: 20px; padding: 2.5rem;
+            max-width: 1100px; width: 90%; backdrop-filter: blur(15px); box-shadow: 0 0 40px rgba(0, 243, 255, 0.15);
+            opacity: 0; transform: translateY(80px) scale(0.98); transition: all 0.8s cubic-bezier(0.25, 0.8, 0.25, 1);
+            position: relative; overflow: hidden;
+        }
+        .content-box.visible { opacity: 1; transform: translateY(0) scale(1); }
+
+        /* --- LAYOUT DIVIDIDO --- */
+        .split-layout { display: flex; align-items: center; gap: 3rem; }
+        .split-text { flex: 1; text-align: left; }
+        .split-image { flex: 1; display: flex; justify-content: center; align-items: center; }
+        .tech-image {
+            width: 100%; max-width: 450px; border-radius: 12px; border: 2px solid rgba(0, 243, 255, 0.5);
+            box-shadow: 0 0 25px rgba(0, 243, 255, 0.4); transition: transform 0.3s ease;
+        }
+        .tech-image:hover { transform: scale(1.02); }
+
+        /* --- TIPOGRAFÍA --- */
+        h1, h2, h3 { font-family: 'Orbitron', sans-serif; text-transform: uppercase; }
+        h1 { font-size: clamp(2.5rem, 5vw, 4rem); color: #fff; text-shadow: 0 0 15px #00f3ff; text-align: center; margin-top: 0; }
+        h2 { font-size: clamp(1.8rem, 3vw, 2.5rem); color: #00f3ff; margin-bottom: 1rem; }
+        p, ul { font-size: clamp(1.1rem, 1.5vw, 1.3rem); line-height: 1.5; color: #b8c7d4; }
+
+        /* =========================================================
+           PANAL STEAMPUNK Y FLUIDO RADIACTIVO "GOOEY"
+           ========================================================= */
+        .honeycomb-container {
+            position: relative; width: 700px; height: 450px; margin: 2rem auto 0 auto;
+            display: flex; flex-wrap: wrap; justify-content: center; align-items: center;
+            /* Importante para que el filtro no corte el brillo */
+            filter: drop-shadow(0 0 10px #ccff00);
+        }
+
+        .hex-row { display: flex; justify-content: center; width: 100%; margin-bottom: -45px; position: relative; z-index: 20; }
+        .hex-row.middle { margin-left: 95px; }
+
+        .hex-wrapper {
+            position: relative; width: 190px; height: 215px; margin: 0 5px;
+            background: linear-gradient(135deg, #b87333, #ffdf00, #8b4513, #2a1b10);
+            clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+            display: flex; justify-content: center; align-items: center;
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            cursor: pointer; z-index: 20; /* Por encima del fluido */
+        }
+        .hex-wrapper:hover { transform: scale(1.2); z-index: 40; }
+
+        .hex-inner {
+            width: 180px; height: 205px; background: #0f0f15;
+            clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+            position: relative; overflow: hidden;
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+        }
+        .hex-inner img {
+            position: absolute; top: 0; left: 0; width: 140%; height: 100%; object-fit: cover; opacity: 0.5;
+            transition: transform 4s ease-out, opacity 0.4s;
+        }
+        .hex-wrapper:hover .hex-inner img { transform: translateX(-20%); opacity: 1; }
+
+        .hex-text {
+            position: relative; z-index: 2; text-align: center;
+            color: #fff; font-family: 'Orbitron', sans-serif; font-size: 0.8rem; font-weight: bold;
+            text-shadow: 0 0 5px #000, 0 0 10px rgba(204, 255, 0, 0.8);
+            background: rgba(0, 0, 0, 0.7); padding: 5px 8px; border-radius: 5px;
+            transition: opacity 0.3s;
+        }
+        .hex-wrapper:hover .hex-text { opacity: 0; }
+
+        .hex-center-wrapper { background: linear-gradient(135deg, #ffcc00, #ff8c00, #b87333); z-index: 25; }
+        .hex-center-inner { background: radial-gradient(circle, #2a1b10, #000); }
+        .hex-center-title { 
+            color: #ccff00; font-size: 1.1rem; text-shadow: 0 0 15px #ccff00; 
+            text-align: center; font-family: 'Orbitron', sans-serif;
+        }
+
+        /* --- FLUIDO RADIACTIVO "MELCOCHA" --- */
+        .ooze-container {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            /* Aplica el filtro SVG para el efecto pegajoso */
+            filter: url(#goo); 
+            z-index: 10; /* Detrás de los hexágonos pero sobre el fondo */
+            pointer-events: none;
+        }
+
+        /* Elemento base para el fluido */
+        .ooze-blob, .ooze-stream {
+            position: absolute;
+            background: #ccff00;
+            border-radius: 50%;
+            /* Brillo intenso y sombra para volumen */
+            box-shadow: 
+                inset 0 0 10px rgba(255,255,255,0.8), /* Brillo interior */
+                0 0 15px #ccff00, /* Resplandor cercano */
+                0 0 30px #ccff00; /* Resplandor lejano */
+        }
+
+        /* Corrientes continuas entre hexágonos */
+        .ooze-stream {
+            height: 20px;
+            border-radius: 10px;
+            animation: streamFlow 3s linear infinite;
+        }
+        .stream-1 { top: 80px; left: 180px; width: 80px; transform: rotate(30deg); }
+        .stream-2 { top: 80px; right: 180px; width: 80px; transform: rotate(-30deg); }
+        .stream-3 { top: 280px; left: 80px; width: 100px; transform: rotate(30deg); }
+        .stream-4 { top: 280px; right: 80px; width: 100px; transform: rotate(-30deg); }
+        .stream-5 { top: 330px; left: 300px; width: 100px; }
+
+        /* Gotas que se derriten y caen */
+        .ooze-drip {
+            width: 30px; height: 30px;
+            animation: dripFall 4s ease-in infinite;
+        }
+        .drip-1 { top: 130px; left: 220px; animation-delay: 0s; }
+        .drip-2 { top: 130px; right: 220px; animation-delay: 1.5s; }
+        .drip-3 { top: 350px; left: 130px; animation-delay: 0.5s; }
+        .drip-4 { top: 350px; right: 130px; animation-delay: 2s; }
+        .drip-5 { top: 400px; left: 350px; animation-delay: 1s; }
+
+        /* Animación de flujo continuo */
+        @keyframes streamFlow {
+            0% { opacity: 0.8; transform: scale(1) translate(0, 0) rotate(var(--rot, 0deg)); }
+            50% { opacity: 1; transform: scale(1.1) translate(2px, 2px) rotate(var(--rot, 0deg)); }
+            100% { opacity: 0.8; transform: scale(1) translate(0, 0) rotate(var(--rot, 0deg)); }
+        }
+        /* Animación de goteo viscoso */
+        @keyframes dripFall {
+            0% { transform: scale(1) translateY(0); }
+            40% { transform: scale(1.2, 0.8) translateY(10px); } /* Se aplasta antes de caer */
+            60% { transform: scale(0.6, 1.8) translateY(40px); } /* Se estira al caer */
+            80% { transform: scale(0.4, 2.5) translateY(80px); opacity: 1; } /* Hilo delgado */
+            95% { transform: scale(0.2, 0.2) translateY(120px); opacity: 0; } /* Gota rompe y desaparece */
+            100% { transform: scale(1) translateY(0); opacity: 0; } /* Reinicio */
+        }
+
+        /* CHISPAS DE FONDO */
+        .spark {
+            position: absolute; width: 2px; height: 10px; background: #fff;
+            box-shadow: 0 0 10px #fff, 0 0 20px #00f3ff;
+            opacity: 0; z-index: 1; pointer-events: none;
+            animation: sparkFlash 0.5s linear;
+        }
+        @keyframes sparkFlash {
+            0% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.8; transform: scale(1.5) rotate(45deg); }
+            100% { opacity: 0; transform: scale(0.5); }
+        }
+
+        /* =========================================================
+           BURBUJA ESTILO ANIME (Mascota)
+           ========================================================= */
+        .mascot-bubble {
+            background: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.9), rgba(174, 225, 255, 0.4) 40%, rgba(0, 91, 181, 0.2) 80%);
+            border: 2px solid rgba(255, 255, 255, 0.5); border-radius: 50%; backdrop-filter: blur(5px);
+            box-shadow: 0 0 20px rgba(0, 243, 255, 0.5), inset 10px 10px 20px rgba(255,255,255,0.8), inset -10px -10px 20px rgba(0,0,0,0.3);
+            animation: floatBubble 4s ease-in-out infinite;
+        }
+
+        #corner-mascot { position: fixed; bottom: 40px; right: 40px; width: 90px; height: 90px; z-index: 100; transition: opacity 0.5s; }
+        .anime-eye { position: absolute; background: #fff; border-radius: 50%; border: 1px solid rgba(0,0,0,0.1); overflow: hidden; }
+        .anime-pupil { position: absolute; background: #0b132b; border-radius: 50%; animation: lookAround 6s infinite; }
+        .anime-pupil::after { content: ''; position: absolute; top: 15%; left: 15%; width: 35%; height: 35%; background: white; border-radius: 50%; box-shadow: 0 0 2px white; }
+        .anime-pupil::before { content: ''; position: absolute; bottom: 20%; right: 20%; width: 15%; height: 15%; background: white; border-radius: 50%; }
+        .blush { position: absolute; width: 18%; height: 10%; background: rgba(255, 100, 150, 0.6); border-radius: 50%; filter: blur(3px); top: 60%; }
+        .blush.left { left: 15%; } .blush.right { right: 15%; }
+
+        #corner-mascot .anime-eye { top: 25px; width: 22px; height: 32px; }
+        #corner-mascot .anime-eye.left { left: 18px; } #corner-mascot .anime-eye.right { right: 18px; }
+        #corner-mascot .anime-pupil { bottom: 3px; left: 3px; width: 16px; height: 16px; }
+
+        .giant-mascot { position: relative; width: 250px; height: 250px; margin: 0 auto 2rem auto; }
+        .giant-mascot .anime-eye { top: 70px; width: 55px; height: 80px; }
+        .giant-mascot .anime-eye.left { left: 55px; } .giant-mascot .anime-eye.right { right: 55px; }
+        .giant-mascot .anime-pupil { bottom: 5px; left: 5px; width: 45px; height: 45px; }
+        
+        .mascot-hand {
+            position: absolute; top: 50%; right: -30px; width: 60px; height: 60px;
+            background: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.9), rgba(174, 225, 255, 0.6));
+            border-radius: 50%; border: 2px solid rgba(255, 255, 255, 0.6); backdrop-filter: blur(2px);
+            box-shadow: inset -5px -5px 10px rgba(0,0,0,0.2), 0 0 10px #00f3ff;
+            transform-origin: bottom left; animation: waveHand 1.5s ease-in-out infinite; z-index: -1;
+        }
+
+        .speech-bubble {
+            position: absolute; top: -30px; right: -90px; background: white; color: #030014;
+            padding: 10px 25px; border-radius: 20px; font-family: 'Orbitron', sans-serif; font-weight: bold; font-size: 1.3rem;
+            animation: bounce 2s infinite; box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+        }
+        .speech-bubble::after { content: ''; position: absolute; bottom: -10px; left: 20px; border-width: 10px 10px 0; border-style: solid; border-color: white transparent transparent transparent; }
+
+        /* --- ANIMACIONES --- */
+        @keyframes moveGrid { 0% { background-position: 0 0; } 100% { background-position: 40px 40px; } }
+        @keyframes floatBubble { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+        @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+        @keyframes waveHand { 0%, 100% { transform: rotate(10deg); } 50% { transform: rotate(60deg); } }
+        @keyframes lookAround {
+            0%, 10%, 100% { transform: translate(0, 0); }
+            15%, 35% { transform: translate(-4px, 6px); } 
+            40%, 60% { transform: translate(0, -6px); }   
+            65%, 85% { transform: translate(6px, 0); }    
+        }
+
+        /* --- RESPONSIVE --- */
+        @media (max-width: 868px) {
+            .split-layout { flex-direction: column; gap: 1.5rem; } .split-text { text-align: center; order: 2; } .split-image { order: 1; }
+            #corner-mascot { width: 60px; height: 60px; bottom: 20px; right: 20px; }
+            #corner-mascot .anime-eye { top: 15px; width: 14px; height: 20px; }
+            #corner-mascot .anime-eye.left { left: 12px; } #corner-mascot .anime-eye.right { right: 12px; }
+            #corner-mascot .anime-pupil { width: 10px; height: 10px; bottom: 2px; left: 2px; }
+            
+            /* Panal a Grid Vertical en Móvil */
+            .honeycomb-container { width: 100%; height: auto; display: flex; flex-direction: column; align-items: center; gap: 10px; margin-top: 1rem; }
+            .hex-row { flex-direction: column; align-items: center; margin: 0; }
+            .hex-row.middle { margin-left: 0; }
+            .hex-wrapper { margin: 5px 0; }
+            .ooze-container { display: none; } /* Ocultar fluido en móvil para simplificar */
+        }
+    </style>
+</head>
+<body>
+    
+    <svg xmlns="http://www.w3.org/2000/svg" version="1.1" style="position: absolute; width: 0; height: 0;">
+        <defs>
+            <filter id="goo">
+                <feGaussianBlur in="SourceGraphic" stdDeviation="10" result="blur" />
+                <feColorMatrix in="blur" mode="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 19 -9" result="goo" />
+                <feComposite in="SourceGraphic" in2="goo" operator="atop"/>
+            </filter>
+        </defs>
+    </svg>
+
+    <div class="background-grid"></div>
+    <div class="glow-orb"></div>
+
+    <div id="corner-mascot" class="mascot-bubble">
+        <div class="blush left"></div><div class="blush right"></div>
+        <div class="anime-eye left"><div class="anime-pupil"></div></div>
+        <div class="anime-eye right"><div class="anime-pupil"></div></div>
+    </div>
+
+    <div class="presentation-container">
+        
+        <section class="slide">
+            <div class="content-box">
+                <h1>The Universe & Beyond</h1>
+                <p style="text-align: center; color: #00f3ff; font-family: 'Orbitron', sans-serif; font-size: 1.5rem;">My Journey in Physics</p>
+                <p style="text-align: center; margin-top: 1.5rem; font-size: 1.3rem;">By Eduardo Cuevas Gomez</p>
+                <p style="text-align: center; margin-top: 0.5rem; color: #b8c7d4;">
+                    Currently in my 2nd semester of a Master's in Physical Sciences at<br>
+                    <strong>Universidad Autónoma de Zacatecas (Unidad Académica de Física)</strong>
+                </p>
+            </div>
+        </section>
+
+        <section class="slide" id="sparks-slide">
+            <div class="content-box" style="max-width: 1200px; overflow: visible;">
+                <h2 style="text-align: center; margin-bottom: 0;">The Frontiers of Physics</h2>
+                
+                <div class="honeycomb-container">
+                    
+                    <div class="ooze-container">
+                        <div class="ooze-stream stream-1" style="--rot: 30deg;"></div>
+                        <div class="ooze-stream stream-2" style="--rot: -30deg;"></div>
+                        <div class="ooze-stream stream-3" style="--rot: 30deg;"></div>
+                        <div class="ooze-stream stream-4" style="--rot: -30deg;"></div>
+                        <div class="ooze-stream stream-5"></div>
+                        
+                        <div class="ooze-blob ooze-drip drip-1"></div>
+                        <div class="ooze-blob ooze-drip drip-2"></div>
+                        <div class="ooze-blob ooze-drip drip-3"></div>
+                        <div class="ooze-blob ooze-drip drip-4"></div>
+                        <div class="ooze-blob ooze-drip drip-5"></div>
+                    </div>
+
+                    <div class="hex-row">
+                        <div class="hex-wrapper">
+                            <div class="hex-inner">
+                                <img src="https://images.unsplash.com/photo-1462331940025-496dfbfc7564?q=80&w=2000&auto=format&fit=crop" alt="Cosmology">
+                                <div class="hex-text">Gravitation &<br>Cosmology</div>
+                            </div>
+                        </div>
+                        <div class="hex-wrapper hex-center-wrapper">
+                            <div class="hex-inner hex-center-inner">
+                                <div class="hex-center-title">PHYSICS<br>FIELDS</div>
+                            </div>
+                        </div>
+                        <div class="hex-wrapper">
+                            <div class="hex-inner">
+                                <img src="https://images.unsplash.com/photo-1635070041078-e363dbe005cb?q=80&w=2000&auto=format&fit=crop" alt="Quantum">
+                                <div class="hex-text">Quantum<br>Mechanics</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="hex-row middle">
+                        <div class="hex-wrapper">
+                            <div class="hex-inner">
+                                <img src="https://images.unsplash.com/photo-1530497610245-94d3c16cda28?q=80&w=2000&auto=format&fit=crop" alt="Medical">
+                                <div class="hex-text">Medical<br>Physics</div>
+                            </div>
+                        </div>
+                        <div class="hex-wrapper">
+                            <div class="hex-inner">
+                                <img src="https://images.unsplash.com/photo-1518770660439-4636190af475?q=80&w=2000&auto=format&fit=crop" alt="Solid State">
+                                <div class="hex-text">Solid<br>State</div>
+                            </div>
+                        </div>
+                        <div class="hex-wrapper">
+                            <div class="hex-inner">
+                                <img src="https://cern.ch/sites/default/files/styles/medium/public/image/mk-in-hi-res.jpg?itok=8aL1c4Rk" alt="Particle Physics">
+                                <div class="hex-text">Particle<br>Physics</div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+        <section class="slide">
+            <div class="content-box">
+                <div class="split-layout">
+                    <div class="split-text">
+                        <h2>My Focus: The Cosmos</h2>
+                        <p>My main interest lies in the study of <strong>Gravitation and Cosmology</strong>. We investigate the largest structures and the deepest mysteries of the universe.</p>
+                        <p>Our work involves exploring the nature of <strong>Dark Matter</strong> and analyzing how massive objects like black holes warp space-time, as described by General Relativity.</p>
+                    </div>
+                    <div class="split-image">
+                        <img src="https://www.eso.org/public/archives/images/large/eso1907a.jpg" alt="Black Hole M87*" class="tech-image" style="border-color: rgba(255, 100, 0, 0.6);">
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="slide">
+            <div class="content-box" style="border-color: rgba(255, 50, 50, 0.5); box-shadow: 0 0 40px rgba(255, 0, 0, 0.15);">
+                <div class="split-layout">
+                    <div class="split-text">
+                        <h2 style="color: #ff4d4d; text-shadow: 0 0 10px rgba(255, 50, 50, 0.8);">The Dual Nature of Science</h2>
+                        <p>Physics gives us incredible power to heal and build, but with that comes <strong>immense responsibility</strong>.</p>
+                        <p>The development of the nuclear bomb by <strong>J. Robert Oppenheimer</strong> and his team during the Manhattan Project changed the world forever. It serves as a stark historical reminder of the ethical considerations in science.</p>
+                        <p>We must always be cautious regarding the martial and destructive applications of our discoveries.</p>
+                    </div>
+                    <div class="split-image">
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e0/Nagasakibomb.jpg/800px-Nagasakibomb.jpg" alt="Atomic Bomb Mushroom Cloud" class="tech-image" style="border-color: rgba(255, 50, 50, 0.8); box-shadow: 0 0 30px rgba(255, 50, 50, 0.6); filter: sepia(0.5) contrast(1.2);">
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="slide">
+            <div class="content-box">
+                <div class="split-layout">
+                    <div class="split-text">
+                        <h2>Research & Geometry</h2>
+                        <p>My research focuses on <strong>Mathematical Physics</strong>, specifically applying <strong>Differential Geometry</strong> to General Relativity.</p>
+                        <p>I presented work on this topic, titled "Application of Differential Geometry to General Relativity," at an international congress in 2024.</p>
+                        <p>This complex mathematical language is essential for describing how gravity bends the universe, unifying abstract math with physical reality.</p>
+                    </div>
+                    <div class="split-image">
+                        <img src="https://images.unsplash.com/photo-1555949963-aa79dcee981c?q=80&w=2000&auto=format&fit=crop" alt="Code and Data" class="tech-image">
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="slide" id="final-slide">
+            <div class="content-box" style="text-align: center; background: transparent; border: none; box-shadow: none; backdrop-filter: none;">
+                
+                <div class="giant-mascot mascot-bubble">
+                    <div class="speech-bubble">Goodbye!</div>
+                    <div class="blush left"></div><div class="blush right"></div>
+                    <div class="anime-eye left"><div class="anime-pupil"></div></div>
+                    <div class="anime-eye right"><div class="anime-pupil"></div></div>
+                    <div class="mascot-hand"></div> 
+                </div>
+
+                <h1 style="font-size: clamp(3rem, 6vw, 5rem);">THANK YOU</h1>
+                <p style="color: #00f3ff; font-weight: bold; font-size: 1.5rem; letter-spacing: 2px;">Any questions?</p>
+            </div>
+        </section>
+
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const cornerMascot = document.getElementById('corner-mascot');
+            const observerOptions = { root: document.querySelector('.presentation-container'), threshold: 0.4 };
+            const sparksSlide = document.getElementById('sparks-slide');
+
+            function createSpark() {
+                if (!sparksSlide.classList.contains('visible')) return;
+                const spark = document.createElement('div');
+                spark.classList.add('spark');
+                spark.style.left = Math.random() * 100 + '%';
+                spark.style.top = Math.random() * 100 + '%';
+                const scale = Math.random() * 0.5 + 0.5;
+                spark.style.transform = `scale(${scale}) rotate(${Math.random() * 360}deg)`;
+                sparksSlide.querySelector('.content-box').appendChild(spark);
+                setTimeout(() => { spark.remove(); }, 600);
+            }
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) { 
+                        entry.target.classList.add('visible'); 
+                        if (entry.target.id === 'sparks-slide') {
+                            window.sparkInterval = setInterval(createSpark, 300);
+                        }
+                    } else {
+                        entry.target.classList.remove('visible');
+                        if (entry.target.id === 'sparks-slide' && window.sparkInterval) {
+                            clearInterval(window.sparkInterval);
+                        }
+                    }
+                    
+                    if (entry.target.id === 'final-slide') {
+                        if (entry.isIntersecting) {
+                            cornerMascot.style.opacity = '0';
+                            setTimeout(() => cornerMascot.style.display = 'none', 500);
+                        } else {
+                            cornerMascot.style.display = 'block';
+                            setTimeout(() => cornerMascot.style.opacity = '1', 50);
+                        }
+                    }
+                });
+            }, observerOptions);
+
+            document.querySelectorAll('.content-box').forEach(box => observer.observe(box));
+            observer.observe(sparksSlide);
+            observer.observe(document.getElementById('final-slide'));
+        });
+    </script>
+</body>
+</html>
